@@ -1,30 +1,35 @@
 /* Kiran Karnati · portfolio
-   Layout: a reading-room shell. The hero is a glass "library app" (shelf sidebar,
-   featured volume, more-from-this-shelf row); below it each case study is a chapter.
-   Single dark theme by design: the room is lit by one brass lamp. */
+   Layout: a reading room. Behind everything sits a luminous CSS "room" (one brass
+   lamp, a dusk window, blurred shelves, film grain). Every panel on top of it is
+   frosted glass: translucent fill, blurred backdrop, a lit top edge and a sheen.
+   The hero is the library app (shelf sidebar, featured volume, more-from-this-shelf);
+   below it each case study is a chapter in its own glass block. Single dark theme. */
 
 :root {
-  --bg: #0f0d0b;
-  --bg-2: #15120f;
-  --glass: rgba(255, 246, 232, 0.045);
-  --glass-2: rgba(255, 246, 232, 0.08);
-  --line: rgba(255, 240, 220, 0.12);
-  --line-2: rgba(255, 240, 220, 0.22);
-  --ink: #f2ebe0;
-  --muted: #b5aa99;
-  --dim: #8c8275;
-  --brass: #e2b25c;
-  --brass-2: #f5d28c;
+  --bg: #0e0b09;
+  --ink: #f4ede2;
+  --muted: #c4b9a8;
+  --dim: #948a7d;
+  --brass: #e6b45d;
+  --brass-2: #f7d58f;
   --brass-ink: #1a1408;
-  --focus: #f5d28c;
+  --focus: #f7d58f;
+
+  /* glass material */
+  --glass-fill: rgba(20, 16, 13, 0.52);
+  --glass-fill-2: rgba(28, 23, 19, 0.6);
+  --glass-tint: rgba(255, 248, 236, 0.07);
+  --glass-edge: rgba(255, 248, 236, 0.16);
+  --glass-edge-lit: rgba(255, 250, 240, 0.34);
+  --glass-shadow: 0 30px 70px rgba(0, 0, 0, 0.48);
+  --blur: 26px;
 
   --display: "Fraunces", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
   --body: "Instrument Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
 
-  --radius: 18px;
-  --radius-sm: 10px;
-  --gutter: max(16px, env(safe-area-inset-left, 0px));
+  --radius: 22px;
+  --radius-sm: 14px;
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
   color-scheme: dark;
 }
@@ -51,15 +56,51 @@ code { font-family: var(--mono); }
 .skip { position: absolute; left: 16px; top: -60px; background: var(--brass); color: var(--brass-ink); padding: 8px 12px; border-radius: 8px; z-index: 50; font-weight: 600; }
 .skip:focus { top: 12px; }
 
-/* The lamp: one warm light source, top-left, plus faint shelf lines. */
+/* ── The room ───────────────────────────────────────────────────────────
+   Light sources sit near the edges so the glass in the centre stays readable
+   while its borders catch colour. ::before = blurred shelves, ::after = grain. */
 .lamp {
-  position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden;
   background:
-    radial-gradient(900px 600px at 12% -10%, rgba(226, 178, 92, 0.22), transparent 65%),
-    radial-gradient(700px 500px at 100% 110%, rgba(120, 90, 60, 0.18), transparent 70%),
-    repeating-linear-gradient(180deg, transparent 0 220px, rgba(255, 240, 220, 0.025) 220px 221px),
-    var(--bg);
+    radial-gradient(1000px 640px at 6% -8%, rgba(242, 176, 86, 0.56), transparent 62%),
+    radial-gradient(820px 620px at 96% 34%, rgba(92, 136, 182, 0.55), transparent 60%),
+    radial-gradient(900px 520px at 70% 108%, rgba(168, 96, 58, 0.55), transparent 62%),
+    radial-gradient(640px 460px at 18% 78%, rgba(120, 64, 44, 0.45), transparent 62%),
+    radial-gradient(520px 380px at 50% 45%, rgba(74, 46, 34, 0.35), transparent 65%),
+    linear-gradient(180deg, #1c1611 0%, #120e0b 55%, #0d0a08 100%);
 }
+.lamp::before {
+  content: ""; position: absolute; inset: -6% -4%;
+  background:
+    repeating-linear-gradient(90deg,
+      #8a3a37 0 44px, #2f5480 44px 70px, #a7812f 70px 128px, #3c6a50 128px 160px,
+      #5d5a6a 160px 212px, #b5653c 212px 248px, #2b4466 248px 300px, #7a3f30 300px 336px);
+  -webkit-mask-image: repeating-linear-gradient(180deg, transparent 0 70px, #000 70px 250px, transparent 250px 290px);
+  mask-image: repeating-linear-gradient(180deg, transparent 0 70px, #000 70px 250px, transparent 250px 290px);
+  filter: blur(34px) saturate(0.95);
+  opacity: 0.27;
+  transform: rotate(-2deg) scale(1.08);
+}
+.lamp::after {
+  content: ""; position: absolute; inset: 0; opacity: 0.07; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ── Glass material ─────────────────────────────────────────────────── */
+.glass, .topbar, .tabs, .shelf-frame, .card, .chapter, .ref, .timeline, .desk-card {
+  position: relative;
+  background: linear-gradient(160deg, var(--glass-tint), transparent 55%), var(--glass-fill);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(150%);
+  backdrop-filter: blur(var(--blur)) saturate(150%);
+  border: 1px solid var(--glass-edge);
+  box-shadow: inset 0 1px 0 var(--glass-edge-lit), inset 0 -1px 0 rgba(0, 0, 0, 0.25), var(--glass-shadow);
+}
+/* The sheen: a diagonal highlight, like light grazing a pane. */
+.shelf-frame::before, .card::before, .chapter::before, .ref::before, .desk-card::before, .timeline::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(118deg, rgba(255, 255, 255, 0.11) 0%, rgba(255, 255, 255, 0.03) 28%, transparent 46%, transparent 72%, rgba(255, 255, 255, 0.045) 100%);
+}
+.shelf-frame > *, .card > *, .chapter > *, .ref > *, .desk-card > *, .timeline > * { position: relative; }
 
 .eyebrow { font: 500 0.72rem/1.2 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--brass); margin: 0 0 10px; }
 .lede { color: var(--muted); max-width: 62ch; font-size: 1.05rem; }
@@ -69,30 +110,31 @@ code { font-family: var(--mono); }
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   min-height: 44px; padding: 0 18px; border-radius: 999px;
   font: 600 0.95rem/1 var(--body); text-decoration: none; cursor: pointer;
-  border: 1px solid var(--line-2); color: var(--ink); background: var(--glass);
+  border: 1px solid var(--glass-edge); color: var(--ink);
+  background: linear-gradient(180deg, rgba(255, 248, 236, 0.12), rgba(255, 248, 236, 0.04));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
   transition: transform 0.25s var(--ease), background 0.25s, border-color 0.25s;
 }
-.btn:hover { text-decoration: none; background: var(--glass-2); border-color: var(--brass); transform: translateY(-1px); }
-.btn-solid { background: var(--brass); color: var(--brass-ink); border-color: var(--brass); }
-.btn-solid:hover { background: var(--brass-2); border-color: var(--brass-2); }
+.btn:hover { text-decoration: none; background: linear-gradient(180deg, rgba(255, 248, 236, 0.2), rgba(255, 248, 236, 0.08)); border-color: var(--brass); transform: translateY(-1px); }
+.btn-solid { background: linear-gradient(180deg, var(--brass-2), var(--brass)); color: var(--brass-ink); border-color: var(--brass); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 8px 24px rgba(230, 180, 93, 0.25); }
+.btn-solid:hover { background: linear-gradient(180deg, #fde3a6, var(--brass-2)); border-color: var(--brass-2); }
 .btn-icon { width: 44px; padding: 0; }
 
 /* ── Top bar ─────────────────────────────────────────────────────────── */
 .topbar {
-  position: sticky; top: 0; z-index: 20;
+  position: sticky; top: 10px; z-index: 20;
   display: flex; align-items: center; gap: 16px;
-  max-width: 1180px; margin: 0 auto; padding: 14px 0;
-  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-  background: linear-gradient(180deg, rgba(15, 13, 11, 0.85), rgba(15, 13, 11, 0.55));
-  border-bottom: 1px solid var(--line);
+  max-width: 1180px; margin: 10px auto 0; padding: 10px 14px 10px 16px;
+  border-radius: 999px;
+  --blur: 22px;
 }
 .wordmark { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); font-family: var(--display); font-weight: 600; font-size: 1.1rem; }
 .wordmark:hover { text-decoration: none; color: var(--brass-2); }
-.tabs { display: flex; gap: 4px; margin-left: auto; padding: 4px; border: 1px solid var(--line); border-radius: 999px; background: var(--glass); overflow-x: auto; scrollbar-width: none; }
+.tabs { display: flex; gap: 4px; margin-left: auto; padding: 4px; border-radius: 999px; overflow-x: auto; scrollbar-width: none; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12); --blur: 0px; backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(0, 0, 0, 0.22); }
 .tabs::-webkit-scrollbar { display: none; }
 .tabs a { white-space: nowrap; padding: 8px 14px; border-radius: 999px; color: var(--muted); font-size: 0.9rem; font-weight: 500; transition: background 0.2s, color 0.2s; }
 .tabs a:hover { color: var(--ink); text-decoration: none; }
-.tabs a.is-active { background: var(--glass-2); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line-2); }
+.tabs a.is-active { background: linear-gradient(180deg, rgba(255, 248, 236, 0.18), rgba(255, 248, 236, 0.08)); color: var(--ink); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 2px 8px rgba(0, 0, 0, 0.3); }
 .topbar-cta { min-height: 38px; }
 
 /* ── Books (CSS only, three sizes) ───────────────────────────────────── */
@@ -102,14 +144,14 @@ code { font-family: var(--mono); }
   transform-style: preserve-3d;
   transform: rotateY(-22deg) rotateX(3deg);
   transition: transform 0.6s var(--ease);
-  filter: drop-shadow(-18px 24px 28px rgba(0, 0, 0, 0.55));
+  filter: drop-shadow(-18px 26px 30px rgba(0, 0, 0, 0.6));
 }
 .book-sm { --w: 100%; filter: drop-shadow(-8px 12px 16px rgba(0, 0, 0, 0.5)); }
 .book-md { --w: 200px; }
 .book .pages {
   position: absolute; top: 2.5%; bottom: 2.5%; left: 4%; right: -3%;
   border-radius: 2px 8px 8px 2px;
-  background: repeating-linear-gradient(180deg, #e8dcc6 0 2px, #cdbfa5 2px 3px);
+  background: repeating-linear-gradient(180deg, #ece0ca 0 2px, #cfc1a7 2px 3px);
   transform: translateZ(-14px);
 }
 .book .cover {
@@ -119,8 +161,9 @@ code { font-family: var(--mono); }
   color: var(--ink);
   background:
     linear-gradient(90deg, rgba(0, 0, 0, 0.45) 0, rgba(0, 0, 0, 0.1) 7%, transparent 11%),
+    linear-gradient(100deg, transparent 55%, rgba(255, 255, 255, 0.07) 58%, rgba(255, 255, 255, 0.1) 70%, transparent 74%),
     linear-gradient(160deg, var(--c1), var(--c2));
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), inset -2px 0 6px rgba(0, 0, 0, 0.25);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1), inset -2px 0 6px rgba(0, 0, 0, 0.25);
   overflow: hidden;
 }
 .book .cover::after {
@@ -133,33 +176,30 @@ code { font-family: var(--mono); }
 .book-sm .cover-title { font-size: clamp(0.95rem, 1.25vw + 0.5rem, 1.35rem); }
 .cover-sub { font: 500 0.66rem/1.3 var(--mono); opacity: 0.8; margin-top: auto; }
 .cover-author { font: 500 0.62rem/1 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.7; }
-.book-1 { --c1: #7a2f2d; --c2: #3a1413; }
-.book-2 { --c1: #8b6a26; --c2: #3b2b0c; }
-.book-3 { --c1: #2c4a73; --c2: #121f33; }
-.book-4 { --c1: #2f5a44; --c2: #11261b; }
-.book-0 { --c1: #4d4b56; --c2: #1e1d24; }
+.book-1 { --c1: #843230; --c2: #3d1514; }
+.book-2 { --c1: #957229; --c2: #3e2d0d; }
+.book-3 { --c1: #30507c; --c2: #132237; }
+.book-4 { --c1: #336149; --c2: #12291d; }
+.book-0 { --c1: #54525e; --c2: #211f27; }
 
 /* ── The shelf (hero) ────────────────────────────────────────────────── */
-.shelf { max-width: 1180px; margin: 28px auto 0; }
+.shelf { max-width: 1180px; margin: 22px auto 0; }
 .shelf-frame {
   display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 0;
-  border: 1px solid var(--line); border-radius: var(--radius);
-  background: linear-gradient(180deg, rgba(255, 246, 232, 0.06), rgba(255, 246, 232, 0.025));
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius);
   overflow: hidden;
 }
-.shelf-side { padding: 24px 20px; border-right: 1px solid var(--line); display: grid; align-content: start; gap: 22px; min-width: 0; }
+.shelf-side { padding: 24px 20px; border-right: 1px solid var(--glass-edge); display: grid; align-content: start; gap: 22px; min-width: 0; background: rgba(0, 0, 0, 0.16); }
 .volumes { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
-.vol { display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: center; padding: 8px; border-radius: var(--radius-sm); color: var(--ink); transition: background 0.2s; }
-.vol:hover { background: var(--glass-2); text-decoration: none; }
+.vol { display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: center; padding: 8px; border-radius: var(--radius-sm); color: var(--ink); border: 1px solid transparent; transition: background 0.2s, border-color 0.2s; }
+.vol:hover { background: rgba(255, 248, 236, 0.08); border-color: var(--glass-edge); text-decoration: none; }
 .vol-text { display: grid; min-width: 0; }
 .vol-text strong { font-weight: 600; font-size: 0.95rem; }
 .vol-text small { color: var(--muted); font-size: 0.78rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.mini { display: grid; place-items: center; width: 34px; aspect-ratio: 2 / 3; border-radius: 2px 5px 5px 2px; background: linear-gradient(160deg, var(--c1), var(--c2)); box-shadow: inset 2px 0 0 rgba(0, 0, 0, 0.35), 0 4px 8px rgba(0, 0, 0, 0.4); }
+.mini { display: grid; place-items: center; width: 34px; aspect-ratio: 2 / 3; border-radius: 2px 5px 5px 2px; background: linear-gradient(160deg, var(--c1), var(--c2)); box-shadow: inset 2px 0 0 rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 4px 8px rgba(0, 0, 0, 0.4); }
 .mini i { font: 500 0.6rem var(--mono); font-style: normal; color: rgba(255, 255, 255, 0.85); }
-.mini-1 { --c1: #7a2f2d; --c2: #3a1413; } .mini-2 { --c1: #8b6a26; --c2: #3b2b0c; } .mini-3 { --c1: #2c4a73; --c2: #121f33; } .mini-4 { --c1: #2f5a44; --c2: #11261b; } .mini-0 { --c1: #4d4b56; --c2: #1e1d24; }
-.catalogue { margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-top: 18px; border-top: 1px solid var(--line); }
+.mini-1 { --c1: #843230; --c2: #3d1514; } .mini-2 { --c1: #957229; --c2: #3e2d0d; } .mini-3 { --c1: #30507c; --c2: #132237; } .mini-4 { --c1: #336149; --c2: #12291d; } .mini-0 { --c1: #54525e; --c2: #211f27; }
+.catalogue { margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-top: 18px; border-top: 1px solid var(--glass-edge); }
 .catalogue div { display: grid; }
 .catalogue dt { font: 500 0.66rem/1.2 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); order: 2; }
 .catalogue dd { margin: 0; font: 600 1.35rem/1.1 var(--display); font-variant-numeric: tabular-nums; }
@@ -172,14 +212,14 @@ code { font-family: var(--mono); }
 .byline { color: var(--muted); font-size: 0.95rem; }
 .blurb { color: var(--ink); max-width: 56ch; font-size: 1.02rem; }
 .tags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
-.tag { font: 500 0.72rem/1 var(--mono); letter-spacing: 0.06em; padding: 7px 10px; border-radius: 999px; border: 1px solid var(--line-2); color: var(--muted); }
+.tag { font: 500 0.72rem/1 var(--mono); letter-spacing: 0.06em; padding: 7px 10px; border-radius: 999px; border: 1px solid var(--glass-edge); color: var(--muted); background: rgba(255, 248, 236, 0.05); }
 .tag-hot { background: var(--brass); color: var(--brass-ink); border-color: var(--brass); }
 .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
 
-.more { display: grid; gap: 12px; padding-top: 22px; border-top: 1px solid var(--line); }
+.more { display: grid; gap: 12px; padding-top: 22px; border-top: 1px solid var(--glass-edge); }
 .cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
-.card { display: grid; gap: 10px; padding: 14px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--glass); color: var(--ink); perspective: 800px; transition: background 0.25s, border-color 0.25s, transform 0.3s var(--ease); min-width: 0; }
-.card:hover { background: var(--glass-2); border-color: var(--line-2); text-decoration: none; transform: translateY(-3px); }
+.card { display: grid; gap: 10px; padding: 14px; border-radius: var(--radius-sm); color: var(--ink); perspective: 800px; transition: transform 0.3s var(--ease), border-color 0.25s, box-shadow 0.25s; min-width: 0; --blur: 18px; --glass-fill: rgba(255, 248, 236, 0.04); box-shadow: inset 0 1px 0 var(--glass-edge-lit), 0 10px 30px rgba(0, 0, 0, 0.3); }
+.card:hover { border-color: rgba(255, 248, 236, 0.3); text-decoration: none; transform: translateY(-3px); box-shadow: inset 0 1px 0 var(--glass-edge-lit), 0 18px 40px rgba(0, 0, 0, 0.4); }
 .card .book { transform: rotateY(-14deg) rotateX(2deg); margin: 4px auto 2px; width: 72%; }
 .card:hover .book { transform: rotateY(-4deg) rotateX(0deg) translateY(-4px); }
 .card strong { font-weight: 600; font-size: 0.95rem; }
@@ -187,11 +227,13 @@ code { font-family: var(--mono); }
 
 /* ── Chapters ───────────────────────────────────────────────────────── */
 .chapters, .reference, .catalogue-sec, .desk { max-width: 1180px; margin: 0 auto; padding: 96px 0 0; }
-.section-head { display: grid; gap: 8px; margin-bottom: 40px; }
+.section-head { display: grid; gap: 8px; margin-bottom: 28px; }
 .section-head h2 { font-size: clamp(1.8rem, 3.4vw, 2.6rem); }
+.chapters { display: grid; gap: 18px; }
+.chapters .section-head { margin-bottom: 10px; }
 .chapter {
   display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 40px; align-items: start;
-  padding: 40px 0; border-top: 1px solid var(--line);
+  padding: 36px 40px 36px 32px; border-radius: var(--radius);
   scroll-margin-top: 90px;
 }
 .chapter-cover { display: grid; place-items: center; perspective: 1000px; padding: 20px 0; position: sticky; top: 100px; }
@@ -204,34 +246,34 @@ code { font-family: var(--mono); }
 .figures dd { margin: 0; font: 600 1.7rem/1.1 var(--display); color: var(--brass-2); font-variant-numeric: tabular-nums; }
 .figures dt { font-size: 0.8rem; color: var(--muted); }
 .chips { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
-.chips li { font: 500 0.74rem/1 var(--mono); padding: 7px 10px; border-radius: 999px; background: var(--glass); border: 1px solid var(--line); color: var(--muted); }
+.chips li { font: 500 0.74rem/1 var(--mono); padding: 7px 10px; border-radius: 999px; background: rgba(255, 248, 236, 0.06); border: 1px solid var(--glass-edge); color: var(--muted); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1); }
 
 /* ── Reference (skills) ─────────────────────────────────────────────── */
 .ref-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
-.ref { padding: 20px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--glass); min-width: 0; }
+.ref { padding: 22px; border-radius: var(--radius-sm); min-width: 0; --blur: 18px; }
 .ref h3 { font-size: 1.1rem; margin-bottom: 10px; }
 .ref ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; color: var(--muted); font-size: 0.95rem; }
 .ref li::before { content: "— "; color: var(--brass); }
 
 /* ── Catalogue (timeline) ───────────────────────────────────────────── */
-.timeline { list-style: none; margin: 0; padding: 0; display: grid; }
-.timeline li { display: grid; grid-template-columns: 180px 1fr; gap: 24px; padding: 20px 0; border-top: 1px solid var(--line); }
-.timeline li:last-child { border-bottom: 1px solid var(--line); }
+.timeline { list-style: none; margin: 0; padding: 8px 32px; display: grid; border-radius: var(--radius); }
+.timeline li { display: grid; grid-template-columns: 180px 1fr; gap: 24px; padding: 22px 0; border-top: 1px solid var(--glass-edge); }
+.timeline li:first-child { border-top: 0; }
 .when { font: 500 0.78rem/1.6 var(--mono); color: var(--brass); letter-spacing: 0.04em; white-space: nowrap; }
 .timeline h3 { font-size: 1.15rem; margin-bottom: 4px; }
 .timeline p { color: var(--muted); max-width: 66ch; }
 
 /* ── Front desk (contact) ───────────────────────────────────────────── */
 .desk { padding-bottom: 40px; }
-.desk-card { padding: 40px; border: 1px solid var(--line); border-radius: var(--radius); background: linear-gradient(180deg, rgba(226, 178, 92, 0.08), rgba(255, 246, 232, 0.03)); display: grid; gap: 14px; }
+.desk-card { padding: 40px; border-radius: var(--radius); display: grid; gap: 14px; --glass-tint: rgba(230, 180, 93, 0.14); }
 .desk-card h2 { font-size: clamp(1.8rem, 3.4vw, 2.6rem); }
 .contact-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 6px; }
-.email { font-size: 1rem; padding: 10px 14px; border-radius: 999px; background: var(--bg-2); border: 1px solid var(--line); user-select: all; }
+.email { font-size: 1rem; padding: 10px 14px; border-radius: 999px; background: rgba(0, 0, 0, 0.32); border: 1px solid var(--glass-edge); box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4); user-select: all; }
 .links { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 22px; }
 .links a { font-weight: 500; }
 .btn[data-copied="true"] { border-color: var(--brass); color: var(--brass-2); }
 
-.colophon { max-width: 1180px; margin: 0 auto; padding: 28px 0 48px; display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; color: var(--dim); font-size: 0.82rem; border-top: 1px solid var(--line); }
+.colophon { max-width: 1180px; margin: 0 auto; padding: 28px 4px 48px; display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; color: var(--dim); font-size: 0.82rem; border-top: 1px solid var(--glass-edge); }
 
 /* ── Motion ─────────────────────────────────────────────────────────── */
 /* Reveal runs only when JS has booted (html.js); without it, everything is simply visible. */
@@ -247,6 +289,11 @@ html.js #hero-book { animation: float 7s ease-in-out infinite; }
   html.js #hero-book { animation: none; }
   .btn, .card, .book, .vol { transition: none; }
 }
+/* Solid panels for people who turn transparency off. */
+@media (prefers-reduced-transparency: reduce) {
+  .glass, .topbar, .tabs, .shelf-frame, .card, .chapter, .ref, .timeline, .desk-card { backdrop-filter: none; -webkit-backdrop-filter: none; background: #171310; }
+  .lamp::before { display: none; }
+}
 
 /* ── Responsive ─────────────────────────────────────────────────────── */
 @media (max-width: 1040px) {
@@ -256,12 +303,14 @@ html.js #hero-book { animation: float 7s ease-in-out infinite; }
   .ref-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 860px) {
+  :root { --blur: 18px; }
   .shelf-frame { grid-template-columns: 1fr; }
-  .shelf-side { border-right: 0; border-bottom: 1px solid var(--line); }
-  .chapter { grid-template-columns: 1fr; gap: 10px; }
+  .shelf-side { border-right: 0; border-bottom: 1px solid var(--glass-edge); }
+  .chapter { grid-template-columns: 1fr; gap: 10px; padding: 24px 22px; }
   .chapter-cover { position: static; justify-items: start; padding: 0 0 8px; }
   .book-md { --w: 150px; }
   .topbar-cta { display: none; }
+  .timeline { padding: 4px 22px; }
 }
 @media (max-width: 640px) {
   .featured { grid-template-columns: 1fr; }
@@ -275,6 +324,7 @@ html.js #hero-book { animation: float 7s ease-in-out infinite; }
   .catalogue { grid-template-columns: repeat(4, 1fr); }
   .catalogue dd { font-size: 1.1rem; }
   .chapters, .reference, .catalogue-sec, .desk { padding-top: 64px; }
+  .topbar { top: 8px; padding: 8px 10px 8px 12px; }
 }
 @media (max-width: 520px) {
   /* Icon-only wordmark so the tab strip gets the width; it still scrolls if needed. */
