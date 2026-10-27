@@ -1,0 +1,286 @@
+/* Kiran Karnati · portfolio
+   Layout: a reading-room shell. The hero is a glass "library app" (shelf sidebar,
+   featured volume, more-from-this-shelf row); below it each case study is a chapter.
+   Single dark theme by design: the room is lit by one brass lamp. */
+
+:root {
+  --bg: #0f0d0b;
+  --bg-2: #15120f;
+  --glass: rgba(255, 246, 232, 0.045);
+  --glass-2: rgba(255, 246, 232, 0.08);
+  --line: rgba(255, 240, 220, 0.12);
+  --line-2: rgba(255, 240, 220, 0.22);
+  --ink: #f2ebe0;
+  --muted: #b5aa99;
+  --dim: #8c8275;
+  --brass: #e2b25c;
+  --brass-2: #f5d28c;
+  --brass-ink: #1a1408;
+  --focus: #f5d28c;
+
+  --display: "Fraunces", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --body: "Instrument Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  --radius: 18px;
+  --radius-sm: 10px;
+  --gutter: max(16px, env(safe-area-inset-left, 0px));
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 1rem/1.6 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  overflow-x: hidden;
+}
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; line-height: 1.08; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+p { margin: 0; }
+a { color: var(--brass-2); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 6px; }
+img, svg { max-width: 100%; }
+code { font-family: var(--mono); }
+
+.skip { position: absolute; left: 16px; top: -60px; background: var(--brass); color: var(--brass-ink); padding: 8px 12px; border-radius: 8px; z-index: 50; font-weight: 600; }
+.skip:focus { top: 12px; }
+
+/* The lamp: one warm light source, top-left, plus faint shelf lines. */
+.lamp {
+  position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(900px 600px at 12% -10%, rgba(226, 178, 92, 0.22), transparent 65%),
+    radial-gradient(700px 500px at 100% 110%, rgba(120, 90, 60, 0.18), transparent 70%),
+    repeating-linear-gradient(180deg, transparent 0 220px, rgba(255, 240, 220, 0.025) 220px 221px),
+    var(--bg);
+}
+
+.eyebrow { font: 500 0.72rem/1.2 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--brass); margin: 0 0 10px; }
+.lede { color: var(--muted); max-width: 62ch; font-size: 1.05rem; }
+
+/* ── Buttons ─────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 44px; padding: 0 18px; border-radius: 999px;
+  font: 600 0.95rem/1 var(--body); text-decoration: none; cursor: pointer;
+  border: 1px solid var(--line-2); color: var(--ink); background: var(--glass);
+  transition: transform 0.25s var(--ease), background 0.25s, border-color 0.25s;
+}
+.btn:hover { text-decoration: none; background: var(--glass-2); border-color: var(--brass); transform: translateY(-1px); }
+.btn-solid { background: var(--brass); color: var(--brass-ink); border-color: var(--brass); }
+.btn-solid:hover { background: var(--brass-2); border-color: var(--brass-2); }
+.btn-icon { width: 44px; padding: 0; }
+
+/* ── Top bar ─────────────────────────────────────────────────────────── */
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; gap: 16px;
+  max-width: 1180px; margin: 0 auto; padding: 14px 0;
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  background: linear-gradient(180deg, rgba(15, 13, 11, 0.85), rgba(15, 13, 11, 0.55));
+  border-bottom: 1px solid var(--line);
+}
+.wordmark { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); font-family: var(--display); font-weight: 600; font-size: 1.1rem; }
+.wordmark:hover { text-decoration: none; color: var(--brass-2); }
+.tabs { display: flex; gap: 4px; margin-left: auto; padding: 4px; border: 1px solid var(--line); border-radius: 999px; background: var(--glass); overflow-x: auto; scrollbar-width: none; }
+.tabs::-webkit-scrollbar { display: none; }
+.tabs a { white-space: nowrap; padding: 8px 14px; border-radius: 999px; color: var(--muted); font-size: 0.9rem; font-weight: 500; transition: background 0.2s, color 0.2s; }
+.tabs a:hover { color: var(--ink); text-decoration: none; }
+.tabs a.is-active { background: var(--glass-2); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line-2); }
+.topbar-cta { min-height: 38px; }
+
+/* ── Books (CSS only, three sizes) ───────────────────────────────────── */
+.book {
+  --w: 230px;
+  position: relative; width: var(--w); aspect-ratio: 2 / 3; display: block;
+  transform-style: preserve-3d;
+  transform: rotateY(-22deg) rotateX(3deg);
+  transition: transform 0.6s var(--ease);
+  filter: drop-shadow(-18px 24px 28px rgba(0, 0, 0, 0.55));
+}
+.book-sm { --w: 100%; filter: drop-shadow(-8px 12px 16px rgba(0, 0, 0, 0.5)); }
+.book-md { --w: 200px; }
+.book .pages {
+  position: absolute; top: 2.5%; bottom: 2.5%; left: 4%; right: -3%;
+  border-radius: 2px 8px 8px 2px;
+  background: repeating-linear-gradient(180deg, #e8dcc6 0 2px, #cdbfa5 2px 3px);
+  transform: translateZ(-14px);
+}
+.book .cover {
+  position: absolute; inset: 0; border-radius: 3px 10px 10px 3px;
+  padding: 10% 10% 9% 14%;
+  display: flex; flex-direction: column; gap: 6%;
+  color: var(--ink);
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.45) 0, rgba(0, 0, 0, 0.1) 7%, transparent 11%),
+    linear-gradient(160deg, var(--c1), var(--c2));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), inset -2px 0 6px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+.book .cover::after {
+  content: ""; position: absolute; inset: 7% 8% auto 12%; height: 1px;
+  background: linear-gradient(90deg, var(--brass-2), transparent);
+  opacity: 0.8;
+}
+.cover-tag { font: 500 0.6rem/1 var(--mono); letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.85; margin-top: 8%; }
+.cover-title { font-family: var(--display); font-weight: 700; font-size: clamp(1.1rem, calc(var(--w) * 0.11), 2rem); line-height: 1.02; letter-spacing: -0.01em; margin-top: 2%; }
+.book-sm .cover-title { font-size: clamp(0.95rem, 1.25vw + 0.5rem, 1.35rem); }
+.cover-sub { font: 500 0.66rem/1.3 var(--mono); opacity: 0.8; margin-top: auto; }
+.cover-author { font: 500 0.62rem/1 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.7; }
+.book-1 { --c1: #7a2f2d; --c2: #3a1413; }
+.book-2 { --c1: #8b6a26; --c2: #3b2b0c; }
+.book-3 { --c1: #2c4a73; --c2: #121f33; }
+.book-4 { --c1: #2f5a44; --c2: #11261b; }
+.book-0 { --c1: #4d4b56; --c2: #1e1d24; }
+
+/* ── The shelf (hero) ────────────────────────────────────────────────── */
+.shelf { max-width: 1180px; margin: 28px auto 0; }
+.shelf-frame {
+  display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 0;
+  border: 1px solid var(--line); border-radius: var(--radius);
+  background: linear-gradient(180deg, rgba(255, 246, 232, 0.06), rgba(255, 246, 232, 0.025));
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+.shelf-side { padding: 24px 20px; border-right: 1px solid var(--line); display: grid; align-content: start; gap: 22px; min-width: 0; }
+.volumes { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.vol { display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: center; padding: 8px; border-radius: var(--radius-sm); color: var(--ink); transition: background 0.2s; }
+.vol:hover { background: var(--glass-2); text-decoration: none; }
+.vol-text { display: grid; min-width: 0; }
+.vol-text strong { font-weight: 600; font-size: 0.95rem; }
+.vol-text small { color: var(--muted); font-size: 0.78rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mini { display: grid; place-items: center; width: 34px; aspect-ratio: 2 / 3; border-radius: 2px 5px 5px 2px; background: linear-gradient(160deg, var(--c1), var(--c2)); box-shadow: inset 2px 0 0 rgba(0, 0, 0, 0.35), 0 4px 8px rgba(0, 0, 0, 0.4); }
+.mini i { font: 500 0.6rem var(--mono); font-style: normal; color: rgba(255, 255, 255, 0.85); }
+.mini-1 { --c1: #7a2f2d; --c2: #3a1413; } .mini-2 { --c1: #8b6a26; --c2: #3b2b0c; } .mini-3 { --c1: #2c4a73; --c2: #121f33; } .mini-4 { --c1: #2f5a44; --c2: #11261b; } .mini-0 { --c1: #4d4b56; --c2: #1e1d24; }
+.catalogue { margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-top: 18px; border-top: 1px solid var(--line); }
+.catalogue div { display: grid; }
+.catalogue dt { font: 500 0.66rem/1.2 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); order: 2; }
+.catalogue dd { margin: 0; font: 600 1.35rem/1.1 var(--display); font-variant-numeric: tabular-nums; }
+
+.shelf-main { padding: 28px 28px 24px; display: grid; gap: 30px; min-width: 0; }
+.featured { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 36px; align-items: center; }
+.book-stage { perspective: 1200px; display: grid; place-items: center; padding: 20px 0; }
+.featured-text { display: grid; gap: 12px; min-width: 0; }
+.featured-text h1 { font-size: clamp(2rem, 4.2vw, 3.4rem); font-weight: 600; }
+.byline { color: var(--muted); font-size: 0.95rem; }
+.blurb { color: var(--ink); max-width: 56ch; font-size: 1.02rem; }
+.tags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { font: 500 0.72rem/1 var(--mono); letter-spacing: 0.06em; padding: 7px 10px; border-radius: 999px; border: 1px solid var(--line-2); color: var(--muted); }
+.tag-hot { background: var(--brass); color: var(--brass-ink); border-color: var(--brass); }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+
+.more { display: grid; gap: 12px; padding-top: 22px; border-top: 1px solid var(--line); }
+.cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.card { display: grid; gap: 10px; padding: 14px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--glass); color: var(--ink); perspective: 800px; transition: background 0.25s, border-color 0.25s, transform 0.3s var(--ease); min-width: 0; }
+.card:hover { background: var(--glass-2); border-color: var(--line-2); text-decoration: none; transform: translateY(-3px); }
+.card .book { transform: rotateY(-14deg) rotateX(2deg); margin: 4px auto 2px; width: 72%; }
+.card:hover .book { transform: rotateY(-4deg) rotateX(0deg) translateY(-4px); }
+.card strong { font-weight: 600; font-size: 0.95rem; }
+.card small { color: var(--muted); font-size: 0.8rem; }
+
+/* ── Chapters ───────────────────────────────────────────────────────── */
+.chapters, .reference, .catalogue-sec, .desk { max-width: 1180px; margin: 0 auto; padding: 96px 0 0; }
+.section-head { display: grid; gap: 8px; margin-bottom: 40px; }
+.section-head h2 { font-size: clamp(1.8rem, 3.4vw, 2.6rem); }
+.chapter {
+  display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 40px; align-items: start;
+  padding: 40px 0; border-top: 1px solid var(--line);
+  scroll-margin-top: 90px;
+}
+.chapter-cover { display: grid; place-items: center; perspective: 1000px; padding: 20px 0; position: sticky; top: 100px; }
+.chapter-body { display: grid; gap: 10px; min-width: 0; }
+.chapter-body h3 { font-size: clamp(1.6rem, 2.8vw, 2.2rem); }
+.chapter-body h4 { font-family: var(--body); font-size: 0.78rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--brass); margin-top: 14px; }
+.chapter-body p { max-width: 66ch; color: var(--ink); }
+.figures { margin: 8px 0 6px; display: flex; flex-wrap: wrap; gap: 10px 28px; }
+.figures div { display: grid; }
+.figures dd { margin: 0; font: 600 1.7rem/1.1 var(--display); color: var(--brass-2); font-variant-numeric: tabular-nums; }
+.figures dt { font-size: 0.8rem; color: var(--muted); }
+.chips { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.chips li { font: 500 0.74rem/1 var(--mono); padding: 7px 10px; border-radius: 999px; background: var(--glass); border: 1px solid var(--line); color: var(--muted); }
+
+/* ── Reference (skills) ─────────────────────────────────────────────── */
+.ref-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.ref { padding: 20px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--glass); min-width: 0; }
+.ref h3 { font-size: 1.1rem; margin-bottom: 10px; }
+.ref ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; color: var(--muted); font-size: 0.95rem; }
+.ref li::before { content: "— "; color: var(--brass); }
+
+/* ── Catalogue (timeline) ───────────────────────────────────────────── */
+.timeline { list-style: none; margin: 0; padding: 0; display: grid; }
+.timeline li { display: grid; grid-template-columns: 180px 1fr; gap: 24px; padding: 20px 0; border-top: 1px solid var(--line); }
+.timeline li:last-child { border-bottom: 1px solid var(--line); }
+.when { font: 500 0.78rem/1.6 var(--mono); color: var(--brass); letter-spacing: 0.04em; white-space: nowrap; }
+.timeline h3 { font-size: 1.15rem; margin-bottom: 4px; }
+.timeline p { color: var(--muted); max-width: 66ch; }
+
+/* ── Front desk (contact) ───────────────────────────────────────────── */
+.desk { padding-bottom: 40px; }
+.desk-card { padding: 40px; border: 1px solid var(--line); border-radius: var(--radius); background: linear-gradient(180deg, rgba(226, 178, 92, 0.08), rgba(255, 246, 232, 0.03)); display: grid; gap: 14px; }
+.desk-card h2 { font-size: clamp(1.8rem, 3.4vw, 2.6rem); }
+.contact-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 6px; }
+.email { font-size: 1rem; padding: 10px 14px; border-radius: 999px; background: var(--bg-2); border: 1px solid var(--line); user-select: all; }
+.links { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 22px; }
+.links a { font-weight: 500; }
+.btn[data-copied="true"] { border-color: var(--brass); color: var(--brass-2); }
+
+.colophon { max-width: 1180px; margin: 0 auto; padding: 28px 0 48px; display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; color: var(--dim); font-size: 0.82rem; border-top: 1px solid var(--line); }
+
+/* ── Motion ─────────────────────────────────────────────────────────── */
+/* Reveal runs only when JS has booted (html.js); without it, everything is simply visible. */
+html.js .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.7s var(--ease), transform 0.7s var(--ease); }
+html.js .reveal.in { opacity: 1; transform: none; }
+html.js #hero-book { animation: float 7s ease-in-out infinite; }
+@keyframes float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -8px; } }
+#book-stage.is-tilting #hero-book { transition: transform 0.08s linear; animation: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  html.js .reveal { opacity: 1; transform: none; transition: none; }
+  html.js #hero-book { animation: none; }
+  .btn, .card, .book, .vol { transition: none; }
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────── */
+@media (max-width: 1040px) {
+  .featured { grid-template-columns: 240px minmax(0, 1fr); gap: 24px; }
+  .book { --w: 190px; }
+  .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ref-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 860px) {
+  .shelf-frame { grid-template-columns: 1fr; }
+  .shelf-side { border-right: 0; border-bottom: 1px solid var(--line); }
+  .chapter { grid-template-columns: 1fr; gap: 10px; }
+  .chapter-cover { position: static; justify-items: start; padding: 0 0 8px; }
+  .book-md { --w: 150px; }
+  .topbar-cta { display: none; }
+}
+@media (max-width: 640px) {
+  .featured { grid-template-columns: 1fr; }
+  .book-stage { padding: 10px 0 0; }
+  .featured-text h1 { font-size: 2.1rem; }
+  .shelf-main { padding: 20px 16px; }
+  .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .timeline li { grid-template-columns: 1fr; gap: 4px; }
+  .desk-card { padding: 24px 18px; }
+  .ref-grid { grid-template-columns: 1fr; }
+  .catalogue { grid-template-columns: repeat(4, 1fr); }
+  .catalogue dd { font-size: 1.1rem; }
+  .chapters, .reference, .catalogue-sec, .desk { padding-top: 64px; }
+}
+@media (max-width: 520px) {
+  /* Icon-only wordmark so the tab strip gets the width; it still scrolls if needed. */
+  .wordmark span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .tabs a { padding: 8px 11px; font-size: 0.84rem; }
+}
+@media (max-width: 400px) {
+  .catalogue { grid-template-columns: 1fr 1fr; }
+}
