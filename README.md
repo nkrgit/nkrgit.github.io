@@ -1,12 +1,12 @@
 # Kiran Karnati · portfolio
 
-Static site, three files, no build step. Facts match resume v4 (14 Oct 2026).
+Static site, three files, no build step. Facts match resume v4 (14 Oct 2026). Look: a lunar mission board (black, white, one orange), with a draggable case-study carousel over a CSS-built moonscape.
 
 | File | What |
 |---|---|
 | `index.html` | The page. Edit copy here. |
-| `styles.css` | Layout, the CSS books, motion, responsive rules. |
-| `main.js` | Reveal-on-scroll, tab tracking, book tilt, copy-email. The page works with it disabled. |
+| `styles.css` | The moonscape (stars, orbits, moon, ground), carousel, mission briefs, responsive rules. |
+| `main.js` | Carousel controls and mouse drag, reveal-on-scroll, nav tracking, copy-email. With it disabled the carousel is still a native swipe strip. |
 | `assets/Naga_Kiran_Reddy_Resume.docx` | Resume v4. Replace with a PDF export of the same file and update the two `assets/…` links in `index.html`. |
 | `.nojekyll` | Tells GitHub Pages to serve the files as-is. |
 
@@ -33,5 +33,5 @@ To use a different repo name (e.g. `portfolio`), the URL becomes `https://nkrgit
 
 ## Editing
 
-- A new case study = copy one `<article class="chapter">` block, one `.vol` item in the sidebar, and one `.card` in "More from this shelf". Book colours are the `.book-N` / `.mini-N` variables in `styles.css`.
+- A new case study = one `<li class="slide">` in the carousel, one `.thumb` link, and one `<article class="chapter">` block. Keep the slide count in sync with the thumbnails.
 - Keep numbers in sync with the resume. If it isn't on the resume, it doesn't go on the site.
